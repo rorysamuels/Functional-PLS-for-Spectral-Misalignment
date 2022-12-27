@@ -151,34 +151,28 @@ generate_data <- function(n, nknots, beta_fun, snr, domain, gA, gB){
 # alpha_star: coefficients from partial least squares fitting
 # basis_beta: basis function matrix for functional coefficient
 # basis_x: basis function matrix for observations
-fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
+fplsr <- function(y,x, basis_beta, basis_x = NULL, ncomp = 5){
   
-  if(length(grd) != ncol(x))stop("Dimension mismatch")
+  domain <- attributes(basis_beta)$Boundary.knots
+  a <- domain[1]
+  b <- domain[2]
   
-  a <- min(grd)
-  b <- max(grd)
-  n <- nrow(x)
+  n <- length(y)
   p <- ncol(x)
+  grd <- seq(a,b,length.out = p)
   
-  knots <- seq(a, b, length.out = M+1)[-c(1,M+1)]
-  basis_beta <- bSpline(grd, knots = knots, intercept = T)
-  
-  if(is.null(M_x)){
-    U <- (x%*%splines2:::predict.bSpline2(basis_beta,grd))*((b-a)/(p))
-    basis_x <- NULL
-  } 
+  if(is.null(basis_x)) U <- (x%*%splines2:::predict.bSpline2(basis_beta,grd))*((b-a)/(p))
   else{
-    knots_x <- seq(a, b, length.out = M_x+1)[-c(1,M_x+1)]
-    basis_x <- bSpline(grd, knots = knots_x, intercept = T)
-    B <- matrix(NA,ncol(basis_x),ncol(basis_beta))
+    
+    M <- matrix(NA,ncol(basis_x),ncol(basis_beta))
     for(i in 1:ncol(basis_x)){
       for(j in 1:ncol(basis_beta)){
-        B[i,j] <- basisXbasis(basis_x,basis_beta,i,j)
+        M[i,j] <- basisXbasis(basis_x,basis_beta,i,j)
       }
     }
     
     C <- get_basis_coefs(x,basis_x)
-    U <- C%*%B
+    U <- C%*%M
   }
   
   pls_mod <- plsr(y~U, ncomp = ncomp)
@@ -192,7 +186,7 @@ fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
   }
   
   list(beta_fun = beta_fpls, alpha_star = alpha_star,
-       basis_beta = basis_beta, basis_x = basis_x, grd = grd)
+       basis_beta = basis_beta, basis_x = basis_x)
   
 }
 
@@ -206,25 +200,30 @@ fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
 
 ## Outputs:
 # vector of predicted responses
-pred_fplsr <- function(x, grd, fplsmod){
+pred_fplsr <- function(x, fplsmod){
   
-  a <- min(grd)
-  b <- max(grd)
-  n <- nrow(x)
+  domain <- attributes(fplsmod$basis_beta)$Boundary.knots
+  a <- domain[1]
+  b <- domain[2]
+  
   p <- ncol(x)
+  grd <- seq(a,b,length.out = p)
   
   beta <- fplsmod$beta_fun
   
   if(is.null(fplsmod$basis_x)) x%*%beta(grd)*((b-a)/(p))
   else{
     
-    basis_x <- fplsmod$basis_x
-    nbasis_x <- ncol(basis_x)
+    bxattr <- attributes(fplsmod$basis_x)
+    nbasis_x <- bxattr$dim[2]
+    basis_new_x <- bSpline(grd,knots = bxattr$knots,
+                           degree = bxattr$degree,
+                           intercept = T)
+    
     
     ivec = matrix(NA,nbasis_x,1)
-    for(j in 1:nbasis_x) ivec[j] <- betaXbasis(beta,basis_x,j)
-    C <- get_basis_coefs(x,splines2:::predict.bSpline2(basis_x,grd))
-    
+    for(j in 1:nbasis_x) ivec[j] <- betaXbasis(beta,basis_new_x,j)
+    C <- get_basis_coefs(x,basis_new_x)
     C%*%ivec 
     
   }
