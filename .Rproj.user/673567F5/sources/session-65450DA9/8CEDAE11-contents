@@ -1,0 +1,44 @@
+
+# assume domains are the same
+# assume evenly spaced
+## in possible grd creation
+## in numerical integration
+# or we could allow provided grd
+
+
+x <- X_B_test
+fplsmod <- fplsr_fit
+grd <- grd_B
+
+
+n <- nrow(x)
+p <- ncol(x)
+a <- min(grd)
+b <- max(grd)
+
+beta <- fplsmod$beta_fun
+
+preds <-  x%*%beta(grd)*((b-a)/(p))
+pmse(Y_test,preds2)
+
+
+
+
+
+basis_x <- fplsmod$basis_x
+nbasis_x <- ncol(basis_x)
+
+
+
+ivec = matrix(NA,nbasis_x,1)
+for(j in 1:nbasis_x) ivec[j] <- betaXbasis(beta,basis_x,j)
+C <- get_basis_coefs(x,splines2:::predict.bSpline2(basis_x,grd))
+
+
+preds2 <- C%*%ivec 
+
+}
+
+
+
+

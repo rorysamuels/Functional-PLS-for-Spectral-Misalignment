@@ -89,6 +89,8 @@ pls_preds_B <- as.numeric(X_B_test%*%alpha_adj)
 ##### Functional Partial Least Squares without Basis Approx for Data #####
 
 
+
+
 # Number of components for fPLSR
 fplsr_fit <- fplsr(Y_train, X_A_train, grd = grd_A, M = 10, ncomp = 5)
 
@@ -104,7 +106,14 @@ fpls_preds_B <- pred_fplsr(X_B_test,grd_B, fplsr_fit)
 
 
 
+
+
+
+
+
+
 ##### Functional Partial Least Squares without Basis Approx for Data #####
+
 
 fplsr_fit_basis <- fplsr(Y_train, X_A_train, grd = grd_A, M = 10, M_x = 13, ncomp = 5)
 
@@ -112,6 +121,7 @@ fplsr_fit_basis <- fplsr(Y_train, X_A_train, grd = grd_A, M = 10, M_x = 13, ncom
 # Predictions
 fpls_preds_A_basis <- pred_fplsr(X_A_test,grd_A,fplsr_fit_basis)
 fpls_preds_B_basis <- pred_fplsr(X_B_test,grd_B,fplsr_fit_basis)
+
 
 
 

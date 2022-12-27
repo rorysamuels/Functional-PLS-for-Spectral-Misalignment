@@ -151,6 +151,9 @@ generate_data <- function(n, nknots, beta_fun, snr, domain, gA, gB){
 # alpha_star: coefficients from partial least squares fitting
 # basis_beta: basis function matrix for functional coefficient
 # basis_x: basis function matrix for observations
+
+
+
 fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
   
   if(length(grd) != ncol(x))stop("Dimension mismatch")
@@ -208,6 +211,7 @@ fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
 # vector of predicted responses
 pred_fplsr <- function(x, grd, fplsmod){
   
+  
   a <- min(grd)
   b <- max(grd)
   n <- nrow(x)
@@ -224,20 +228,9 @@ pred_fplsr <- function(x, grd, fplsmod){
     ivec = matrix(NA,nbasis_x,1)
     for(j in 1:nbasis_x) ivec[j] <- betaXbasis(beta,basis_x,j)
     C <- get_basis_coefs(x,splines2:::predict.bSpline2(basis_x,grd))
-    
+
     C%*%ivec 
     
   }
   
 }
-
-
-
-
-
-
-
-
-
-
-
