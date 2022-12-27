@@ -1,0 +1,27 @@
+{
+    "id": "5A2E6D5D",
+    "path": "~/statistics/research/spectral_misalignment/Spectral_Misalignment/example_AOP_crown_data.R",
+    "project_path": "example_AOP_crown_data.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1670271349296.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "tempName": "Untitled2",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "157,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1670384608,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1670384608729,
+    "read_only": false,
+    "read_only_alternatives": []
+}
