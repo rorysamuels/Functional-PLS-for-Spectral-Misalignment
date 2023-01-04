@@ -1,0 +1,185 @@
+\ProvidesPackageRCS $Header: /Users/alex_beaujean/Dropbox/Documents/latex/Beamer/BaylorTheme/beamerthemeBaylorTheme.sty,v .1 2012/11/20 $
+
+% This theme modifies the Boadilla theme
+% Modifications by A. Alexander Beaujean
+% Last modified 20 November 2012
+% Slight modifications 4 May 2022 by Rory Samuels
+
+% Default mode (<presentation> encompasses <beamer>, <handout>, and <trans> (transparencies))
+\mode<beamer>
+\usetheme{Boadilla}
+
+
+\defbeamertemplate*{footline}{BaylorFoot}%
+{
+  \ifnum \insertpagenumber=1
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+  \end{beamercolorbox}%
+  }
+  \vskip0pt%
+\else
+  \leavevmode%
+  \vskip0pt%
+\fi
+}
+\usebeamertemplate{BaylorFoot}
+
+\setbeamerfont{quotation}{shape=\upshape}
+\setbeamertemplate{navigation symbols}{} %Remove navagation symbols
+\setbeamertemplate{blocks}[rounded][shadow=true]
+
+
+
+
+
+% Handout Mode - Using the default layouts, no menus, etc.
+\mode<handout>
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\useinnertheme{default}
+%reset shadow boxes to very light grey
+\setbeamercolor{block title}{fg=black,bg=LightGrey} %
+\setbeamercolor{block body}{fg=black,bg=VeryLightGrey} %
+
+
+%Two horrible hacks to get a "note page" after every slide.
+\newcommand{\noteframe}{
+\only<handout>{ %
+  \begin{frame}
+   \frametitle{Notes}
+   \begin{center}
+   \begin{tikzpicture}
+    \foreach \y in {0,1,2,3,4,5,6}
+     \draw[thick] (0,\y) -- (11,\y);
+   \end{tikzpicture}
+   \end{center}
+  \end{frame}
+  }%
+}
+
+\newcommand{\noteslide}{%to be used after every \framebreak
+\only<handout>{ %
+   \begin{center}
+   \begin{tikzpicture}
+    \foreach \y in {0,1,2,3,4,5,6}
+     \draw[thick] (0,\y) -- (11,\y);
+   \end{tikzpicture}
+   \end{center}
+   \framebreak
+   }%
+}
+
+
+
+
+% Settings for every mode
+\mode
+<all>
+
+
+\newtheorem{algorithmblock}[theorem]{Algorithm}
+\newtheorem{exercise}[theorem]{Exercise}
+%\newtheorem{problem}[theorem]{Problem}
+
+
+% To put an abbrevated TOC at every section, subsection, and subsubsection
+
+% 
+%%% Make TOC slides at each section
+% \AtBeginSection[]{
+% \begin{frame}<handout:0>[allowframebreaks]
+%   \frametitle{Talk Outline}
+% \tableofcontents[sectionstyle=show/hide, subsectionstyle=show/shaded/hide,  subsubsectionstyle=hide]
+% \end{frame}
+% }
+
+%%% Make TOC slides at each subsection
+% \AtBeginSubsection[]{
+% \begin{frame}<handout:0>[allowframebreaks]
+%   \frametitle{Talk Outline}
+% \tableofcontents[subsectionstyle=show/shaded/hide, sectionstyle=show/hide, subsubsectionstyle=hide]
+% \end{frame}
+% }
+
+%%% Make TOC slides at each subsubsection
+% \AtBeginSubsubsection[]{
+% \begin{frame}<handout:0>[allowframebreaks]
+%   \frametitle{Talk Outline}
+% \tableofcontents[subsubsectionstyle=show/shaded/hide, subsectionstyle=show/shaded/hide, sectionstyle=show/hide]
+% \end{frame}
+% }
+
+
+
+%To put "continued" on continued frames instead of numbers
+\setbeamertemplate{frametitle continuation}[from second][\insertcontinuationtext] % will put cont. on contiued frames
+
+
+
+
+
+%%% Header in each slide
+
+\setbeamerfont*{section in toc}{size=\normalsize}
+\setbeamerfont*{subsection in toc}{size=\normalsize}
+\setbeamerfont*{subsubsection in toc}{size=\normalsize}
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{sections/subsections in toc}[default]
+
+
+\setlength{\parskip}{.25cm}
+%\def\mathfamilydefault{\rmdefault}\beamer@sansmathfalse
+\usefonttheme[onlymath]{serif}
+
+
+% =================
+% = Define Course =
+% =================
+
+%
+%
+% The \institute command
+%
+%
+\def\course{\@dblarg\beamer@course}
+\long\def\beamer@course[#1]#2{%
+  \def\beamer@temp{#2}%
+  \ifx\beamer@temp\@empty
+    \def\insertcourse{}
+  \else
+    \def\insertcourse{\def\cour{\beamer@courcour}\def\and{\beamer@andcour}#2}%
+  \fi
+ \def\beamer@shortcourse{#1}}
+\course{}
+
+\def\beamer@courcour#1{{\donotcoloroutermaths$^{#1}$}\ignorespaces}
+\def\beamer@andcour{\\[1em]}
+
+\newcommand\insertshortcourse[1][]{%
+  {%
+    \let\thanks=\@gobble%
+    \def\cour{\beamer@courother}\def\and{\beamer@andother}%
+    \beamer@setupshort{#1}%
+    \beamer@insertshort{\beamer@shortcourse}%
+  }}
+
+
+
+\mode
+<article>
+{
+  \ifx\course\@undefined
+    \newcommand{\course}[2][]{}
+  \else
+    \let\beamer@origcourse=\course
+    \renewcommand{\course}[2][]{\beamer@origcourse{#2}}
+  \fi
+
+  \providecommand\and{\unskip, }
+  \providecommand\cour[1]{$^{#1}$}
+}
+

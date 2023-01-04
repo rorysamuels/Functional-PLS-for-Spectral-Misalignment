@@ -132,7 +132,7 @@ generate_data <- function(n, nknots, beta_fun, snr, domain, gA, gB){
   
   y <- y0 + rnorm(n, mean = 0, sd = sd(y0)/sqrt(snr))
   
-  list(X_A = x_A, X_B = x_B, Y = y)
+  list(X_A = x_A, X_B = x_B, Y = y, sd = sd(y0)/sqrt(snr))
 }
 
 
@@ -143,7 +143,7 @@ generate_data <- function(n, nknots, beta_fun, snr, domain, gA, gB){
 # Fit a functional partial least squares model with or without basis expansion for observations
 
 ## Notes:
-# Only supported for cubic B-spines
+# Only supported for cubic B-splines
 # Assumes equally spaced observation grid
 
 ## Inputs:
@@ -155,13 +155,14 @@ generate_data <- function(n, nknots, beta_fun, snr, domain, gA, gB){
 
 ## Outputs:
 # beta_fun: estimated functional coefficient
-# alpha_star: coefficients from partial least squares fitting
+# alpha_star: coefficients from partial least squares fitting (y~U)
 # basis_beta: basis function matrix for functional coefficient
 # basis_x: basis function matrix for observations
 # grd: input grid used for fplsr fit
 fplsr <- function(y, x, grd, M, M_x = NULL, ncomp = 5){
   
-  if(length(grd) != ncol(x))stop("Dimension mismatch")
+  if(length(grd) != ncol(x))stop("Dimension mismatch: observation grid and measurements")
+  if(length(y) != nrow(x))stop("Dimension mismatch: y and x")
   
   a <- min(grd)
   b <- max(grd)

@@ -1,0 +1,158 @@
+% Copyright 2012 by Alexander Beaujean <Alex_Beaujean@baylor.edu>
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+\ProvidesPackageRCS $Header: /Users/alex_beaujean/Dropbox/Documents/latex/Beamer/BaylorTheme/beamercolorthemebears.sty,v d02a7cf4d8ae 2017/03/01 12:00:41 abeaujean $
+
+\mode<presentation>
+
+% =================
+% = Define Colors =
+% =================
+\definecolor{BaylorGreen}{RGB}{0,72,51}
+\definecolor{BaylorGold}{RGB}{253,187,48}
+\definecolor{BaylorBrown}{RGB}{137,102,51}
+\definecolor{BaylorWhite}{RGB}{255,255,255}
+\definecolor{BaylorBlack}{RGB}{0,0,0}
+\definecolor{LightGrey}{RGB}{200,200,200}
+\definecolor{VeryLightGrey}{RGB}{225,225,225}
+\definecolor{beaverRed}{rgb}{0.5,0,0}
+\definecolor{darkblue}{rgb}{0,0,0.8}
+\definecolor{beetle@other}{RGB}{64,80,127}
+
+% ===========
+% = Palette =
+% ===========
+% \setbeamercolor*{palette primary}{fg=BaylorGreen!60!black,bg=BaylorGold!85!orange}
+% \setbeamercolor*{palette secondary}{fg=BaylorGreen!70!black,bg=BaylorGold!60!orange}
+% \setbeamercolor*{palette tertiary}{bg=BaylorGreen!80!black,fg=BaylorGold!50!orange}
+
+\setbeamercolor*{palette primary}{fg=black,bg=white}
+\setbeamercolor*{palette secondary}{fg=BaylorGreen,bg=BaylorGold}
+\setbeamercolor*{palette tertiary}{fg=BaylorGold,bg=BaylorGreen}
+\setbeamercolor*{palette quaternary}{fg=BaylorGreen,bg=BaylorGold}
+
+
+% ===========
+% = Sidebar =
+% ===========
+\setbeamercolor*{sidebar}{fg=BaylorGold, bg=BaylorGreen}
+% \setbeamercolor*{sidebar}{fg=BaylorWhite,bg=BaylorBlack}
+% \setbeamercolor*{sidebar}{fg=BaylorGold,bg=BaylorGreen}
+
+\setbeamercolor*{palette sidebar primary}{fg=BaylorBlack,bg=BaylorWhite}
+\setbeamercolor*{palette sidebar secondary}{fg=BaylorGold!50!gray, bg=BaylorGreen}
+% \setbeamercolor*{palette sidebar tertiary}{fg=BaylorGreen!50!black}
+% \setbeamercolor*{palette sidebar quaternary}{fg=BaylorGold!10!orange}
+
+\setbeamercolor*{section in sidebar shaded}{parent=palette sidebar secondary}
+\setbeamercolor*{subsection in sidebar shaded}{parent=palette sidebar secondary}
+\setbeamercolor*{subsubsection in sidebar shaded}{parent=palette sidebar secondary}
+
+% \setbeamercolor*{section in sidebar}{palette sidebar primary}
+
+\setbeamercolor*{section in sidebar}
+  	{parent=parent=palette sidebar primary,use={sidebar,section in sidebar shaded},%
+   	fg=BaylorGreen,bg=BaylorGold!80!BaylorWhite}
+
+\setbeamercolor*{subsection in sidebar}
+	{parent=palette sidebar secondary,use=section in sidebar,%
+   	bg=section in sidebar.bg, fg=section in sidebar.fg} 
+
+\setbeamercolor*{subsubsection in sidebar}
+	{parent=palette sidebar secondary,use=section in sidebar,%
+   	bg=section in sidebar.bg, fg=section in sidebar.fg}
+
+
+
+
+% ==========
+% = Frames =
+% ==========
+\setbeamercolor*{frametitle}{parent=palette tertiary}
+\setbeamercolor*{frametitle right}{bg=BaylorGreen!60!BaylorGold}
+
+
+
+% =========
+% = Title =
+% =========
+\setbeamercolor*{titlelike}{parent=palette tertiary}
+\setbeamercolor*{headline}{fg=BaylorGold}
+\setbeamercolor*{headlinecolor}{bg=BaylorGreen}
+
+
+% ========
+% = Text =
+% ========
+% alerted text
+\setbeamercolor*{alerted text}{fg=beaverRed}
+\setbeamercolor{structure}{fg=BaylorBrown,bg=BaylorGreen}
+
+
+% =========
+% = Lines =
+% =========
+\setbeamercolor*{separation line}{}
+\setbeamercolor*{fine separation line}{}
+
+
+
+
+% =========
+% = Blocks =
+% =========
+% reguluar block
+\setbeamercolor*{block title}{fg=BaylorGreen, bg=BaylorGold}
+\setbeamercolor*{block body}{bg=normal text.bg!95!BaylorBlack} %make gray
+
+
+% alert block
+\setbeamercolor{block title alerted}{fg=white,bg=beaverRed}
+\setbeamercolor{block body alerted}{fg=BaylorBlack,bg=white!90!beaverRed}
+
+% definition block
+\BeforeBeginEnvironment{definition}{%
+\setbeamercolor*{block title}{fg=white, bg=BaylorBrown!80!BaylorBlack}
+}
+\AfterEndEnvironment{definition}{
+\setbeamercolor*{block title}{fg=BaylorGreen, bg=BaylorGold}
+}
+
+
+% example block
+\setbeamercolor{block title example}{fg=white,bg=beetle@other}
+\setbeamercolor{block body example}{fg=black,bg=white!90!BaylorGreen}
+
+
+
+
+% =======================
+% = Subsub/Sub/Sections =
+% =======================
+\setbeamercolor{section in toc}{fg=BaylorGreen}
+\setbeamercolor{subsection in toc}{fg=BaylorGreen}
+\setbeamercolor{subsubsection in toc}{fg=BaylorGreen}
+\setbeamercolor{section in toc shaded}{fg=black}
+\setbeamercolor{subsection in toc shaded}{fg=black}
+\setbeamercolor{subsubsection in toc shaded}{fg=black}
+
+% =========
+% = Items =
+% =========
+\setbeamercolor{itemize item}{fg=BaylorGold}
+\setbeamercolor{itemize subitem}{fg=BaylorGreen}
+\setbeamercolor{itemize subsubitem}{fg=BaylorBrown}
+
+% ========
+% = Logo =
+% ========
+\setbeamercolor{logo}{fg=BaylorBlack,bg=BaylorWhite}
+
+\mode
+<all>

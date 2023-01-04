@@ -1,6 +1,8 @@
 library(tidyverse)
 library(splines2)
 library(pls)
+library(here)
+setwd(here())
 source('functions.R')
 
 
@@ -12,7 +14,9 @@ site_trait_data <- read_csv("data/site_trait_data.csv")
 y_data <- drop_na(tibble(ID = site_trait_data$SampleSiteID, y = site_trait_data$d15N))
 xy_data <- inner_join(y_data,x_data)
 refl_data <- xy_data[,20:445]
+neon_grd <- read_rds("data/neon_grd.RDS")
 bad_bands <- c(1:8,192:205,284:327,417:ncol(refl_data))
+good_grd <- neon_grd[-bad_bands]
 
 # Reflectance data
 X <- matrix(unname(unlist(refl_data[,-bad_bands])), nrow = nrow(refl_data))
@@ -74,10 +78,13 @@ y_test <- y[-train_ind]
 
 ##### Partial Least Squares Regression #####
 
-plsr_fit <- plsr(y_train~X_A_train, validation = "CV")
+#plsr_fit <- plsr(y_train~X_A_train, validation = "CV")
 
 # Choose number of componenets which minimize CV PRESS
-k <- which.min(plsr_fit$validation$PRESS)
+#k <- which.min(plsr_fit$validation$PRESS)
+
+k <- 17
+plsr_fit <- plsr(y_train~X_A_train, ncomp = k)
 
 # Coefficients from plsr model
 alpha <- (plsr_fit$coefficients[,,k])

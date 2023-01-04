@@ -1,6 +1,8 @@
 library(tidyverse)
 library(splines2)
 library(pls)
+library(here)
+setwd(here())
 source('functions.R')
 
 ##### Data Generation #####
@@ -127,14 +129,14 @@ fpls_preds_B_basis <- pred_fplsr(X_B_test,grd_B,fplsr_fit_basis)
 
 ##### Prediction Results #####
 
-pmse(pls_preds_A,Y_test)
-pmse(pls_preds_B,Y_test)
-
-pmse(fpls_preds_A,Y_test)
-pmse(fpls_preds_B,Y_test)
-
-pmse(fpls_preds_A_basis,Y_test)
-pmse(fpls_preds_B_basis,Y_test)
+# pmse(pls_preds_A,Y_test)
+# pmse(pls_preds_B,Y_test)
+# 
+# pmse(fpls_preds_A,Y_test)
+# pmse(fpls_preds_B,Y_test)
+# 
+# pmse(fpls_preds_A_basis,Y_test)
+# pmse(fpls_preds_B_basis,Y_test)
 
 
 
