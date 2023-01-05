@@ -31,7 +31,7 @@ pA <- ncol(X)
 grdA <- seq(0,1,length.out = pA)
 
 # Misaligned observtion grid
-pB <- 200
+pB <- 100
 grdB <- seq(0,1,length.out = pB)
 
 # Basis expansion for reflectance data (done to create misaligned observations)

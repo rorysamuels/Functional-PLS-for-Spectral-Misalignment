@@ -19,97 +19,131 @@ library(glue)
 ```
 
 
+## Multiple Linear Regression Model
+
+Suppose we have a sample of $n$ scalar valued response variables $y_i \in \mathbb{R}$ and $p$ corresponding predictor variables $\mathbf{x}_i \in \mathbb{R}^p$. The multiple linear regression model is given by
+
+$$
+y_i = \beta_0 + \boldsymbol{\beta}'\mathbf{x}_i + \epsilon_i,
+$$
+
+where $\beta_0$ is the intercept, $\boldsymbol{\beta}$ is a a vector of coefficients corresponding to the variables in $\mathbf{x}$, and $\epsilon_i \sim N(0,\sigma^2_\epsilon)$.
+
+- Note: for simplicity we assume $\beta_0 = 0$.
+
+## Clasical Partial Least Squares (PLS)
+
+Let $\mathbf{y}$ be the $n\times 1$ vector of responses and $\mathbf{X}$ be the $n\times p$ matrix of measured predictor variables. Given weight vectors $\mathbf{r}_1,...,\mathbf{r}_{k-1}$, the $k$th PLS weight vector is obtained via
+
+$$
+\arg\max_{\mathbf{r}}\text{Cov}^2\left(\mathbf{y}, \mathbf{Xr} \right), \quad \text{subject to:}
+$$
+$$
+\text{Cov}\left(\mathbf{Xr}_m, \mathbf{Xr}\right) = 0\ \ \text{for}\ \ m = 1,...,k-1,\quad \text{and}
+$$
+$$ 
+||\mathbf{r}|||^2_2 = 1.
+$$
+
+- Many algorithms for solving efficiently (e.g. SIMPLS/NIPALS)
+
+
+## PLS Coefficients
+
+Let $\mathbf{R}$ be the $p\times K$ matrix whose columns are the first $K$ PLS empirical weight vectors $\hat{\mathbf{r}}_1,...\hat{\mathbf{r}}_K$.
+
+- X scores: $\mathbf{T} = \mathbf{XR}$
+- Y loadings: $\boldsymbol{\alpha} = (\mathbf{T}'\mathbf{T})^{-1}\mathbf{T}'\mathbf{y}$
+
+$$
+\hat{\mathbf{y}} = \mathbf{T}\boldsymbol{\alpha} = \mathbf{X}(\mathbf{R}\boldsymbol{\alpha})
+$$
+
+- Coefficient: $\hat{\boldsymbol{\beta}}_{PLS} = \mathbf{R}\boldsymbol{\alpha}$
+
+
 ## Functional Linear Regression Model
 
-Suppose we have sample of scalar valued response variables $y_i \in \mathbb{R}$ and functional valued predictors $x_i(t) \in L^2([a,b])$, for $i = 1,..,n$. The functional linear regression model (FLM) is given by:
-
+For functional valued predictors $x_i(w) \in L^2([a,b])$, the functional linear regression model (FLM) is given by
 
 $$
-y_i = \beta_0 + \int_a^bx_i(t)\beta(t)dt + \epsilon_i,
+y_i = \beta_0 + \int_a^bx_i(w)\beta(w)dw + \epsilon_i,
 $$
+where $\beta(w)$ is a functional valued coefficient.
 
-where $\beta_0$ is the intercept, $\beta(t)$ is the functional coefficient, and $\epsilon_i \sim N(0,\sigma^2)$.
-\newline
+\vspace{30pt}
+- For now, we assume $x_i(w)$ are known functions
 
-- Note: for notational simplicity we assume $\beta_0 = 0$.
+- Again assuming $\beta_0 = 0$ for notational simplicity
 
 ## Functional Partial Least Squares (FPLS)
 
-Given weight functions $w_1(t),...,w_{k-1}(t)$, the $k$th weight function is obtained via
+Given weight functions $r_1(w),...,r_{k-1}(w)$, the $k$th FPLS weight function is given by
 
 $$
-\arg\max_{w(t)} \text{Cov}^2\left(y, \int_a^bx(t)w(t)dt\right).
-$$
-
-subject to: 
-
-$$
-\text{Cov}\left(\int_a^bx(t)w_j(t)dt,\int_a^bx(t)w(t)dt\right) = 0\ \ \text{for}\ \ j = 1,...,k-1,
+\arg\max_{w(t)} \text{Cov}^2\left(y, \int_a^bx(w)r(w)dw\right), \quad \text{subject to:}
 $$
 
 $$
-\text{and }||w(t)||^2_2=1.
+\text{Cov}\left(\int_a^bx(w)r_m(w)dt,\int_a^bx(w)r(w)dt\right) = 0\ \ \text{for}\ \ m = 1,...,k-1,\quad \text{and}
 $$
 
-
-## Basis Approximation for Weight Functions
-
-Let $\mathbf{B}(t) = (B_1(t),...,B_{M+d}(t))'$ be a vector of $M+d$ B-spline basis functions of degree $d$. We can approximate the $j$th weight function by 
-
-$$
-w_j(t) \approx \mathbf{b}'_j\mathbf{B}(t),
+$$ 
+||r(w)|||^2_2 = 1.
 $$
 
-where $\mathbf{b}_j$ is a vector of $M+d$ basis coefficients.
+## Basis Expansion for Weight Functions
 
-- If we let $u_r = \int_a^bx(t)B_r(t)dt$ and $\mathbf{u} = (u_1,...,u_{M+d})'$ then
+Let $\mathbf{B}(t) = (B_1(t),...,B_{M+d}(t))'$ be a vector of $M+d$ B-spline basis functions of degree $d$ defined over $M-1$ equally spaced knots on $[a,b]$.
 
-$$
-\int_a^bx(t)w_j(t)dt \approx \mathbf{u}'\mathbf{b}_j
-$$
-
-## Basis Approximation for FPLS
-
-\vspace{-8pt}
-Given $\mathbf{b}_1,...,\mathbf{b}_{k-1}$, the $k$th weight vector is obtained via
-\vspace{15pt}
-$$
-\arg\max_{\mathbf{b}} \text{Cov}^2\left(y, \mathbf{u}'\mathbf{b}\right).
-$$
-
-subject to:
-$$
-\text{Cov}\left(\mathbf{u}'\mathbf{b}_j,\mathbf{u}'\mathbf{b}\right) = 0\ \ \text{for}\ \ j = 1,...,k-1,
-$$
+We can approximate the $m$th weight function by 
 
 $$
-\text{and }||\mathbf{b}'\mathbf{V}\mathbf{b}||^2_2=1.\footnote{$\mathbf{V}$ is the pos. def. matrix of inner products between all pairs of basis functions.}
+r_m(w) \approx \mathbf{b}'_m\mathbf{B}(w),
 $$
 
+where $\mathbf{b}_m$ is a vector of $M+d$ basis coefficients.
 
-## FPLS (Empirically)
 
-Let $\mathbf{y}$ be a vector of $n$ observations of the response, and $\mathbf{U}$ be the $n \times (M+d)$ matrix with elements
+## Defining the $\mathbf{U}$ Matrix
+
+Define $u_{ij} = \int_a^bx_i(w)B_j(w)dw$ and $\mathbf{u}_i = (u_{i1},...,u_{i(M+d)})'$. We can approximate the needed inner-products with:
 
 $$
-\mathbf{U}_{(ij)} = \int_a^bx_i(t)B_j(t)dt.
+\int_a^bx_i(w)r(w)dw \approx \mathbf{b}'\mathbf{u}_i.
 $$
 
-- Finding optimal $\mathbf{b}_j$'s is equivalent to performing classical PLS with response $\mathbf{y}$ and covariates $\mathbf{U}$.
-\newline
-- Can be done efficiently with existing algorithms (e.g. SIMPLS or NIPALS).
+- For all $n$ observations, we can define an $n\times(M+d)$ matrix $\mathbf{U}$ with elements $\mathbf{U}_{(ij)} = u_{ij}$.
+
+## Empirical FPLS Task
+
+Given weight vectors $\mathbf{b}_1,...,\mathbf{b}_{k-1}$, the $k$th FPLS weight vector is obtained via
+
+$$
+\arg\max_{\mathbf{b}}\text{Cov}^2\left(\mathbf{y}, \mathbf{Ub} \right), \quad \text{subject to:}
+$$
+$$
+\text{Cov}\left(\mathbf{Ub}_m, \mathbf{Ub}\right) = 0\ \ \text{for}\ \ m = 1,...,k-1,\quad \text{and}
+$$
+
+$$
+||\mathbf{b}'\mathbf{V}\mathbf{b}||^2_2=1.\footnote{$\mathbf{V}$ is the pos. def. matrix of inner products between all pairs of basis functions.}
+$$
+
+- Equivalent to classical PLS with response vector $\mathbf{y}$ and data-matrix $\mathbf{U}$
+
 
 ## FPLS Coefficient
 
-Let $\mathbf{R}$ be the $(M+d) \times K$ matrix whose columns are the first $K$ empirical weight vectors $\hat{\mathbf{b}}_1,...,\hat{\mathbf{b}}_K$.
+Let $\mathbf{R}$ be the $p\times K$ matrix whose columns are the first $K$ PLS empirical weight vectors $\hat{\mathbf{b}}_1,...\hat{\mathbf{b}}_K$.
 
-- U Scores: $\mathbf{T} = \mathbf{UR}$
-- Y loadings: $\mathbf{q} = (\mathbf{T}'\mathbf{T})^{-1}\mathbf{T}'\mathbf{y}$
+- U scores: $\mathbf{T} = \mathbf{UR}$
+- Y loadings: $\boldsymbol{\alpha} = (\mathbf{T}'\mathbf{T})^{-1}\mathbf{T}'\mathbf{y}$
 
 The estimated functional coefficient is then
 
 $$
-\hat{\beta}_{FPLS}(t) = (\mathbf{Rq})'\mathbf{B}(t)
+\hat{\beta}_{FPLS}(t) = (\mathbf{R}\boldsymbol{\alpha})'\mathbf{B}(t)
 $$
 
 
@@ -121,15 +155,20 @@ $$
 \mathbf{U}_{(ij)} = \int_a^bx_i(t)B_j(t)dt,\ \ i = 1,...,n,\ \ j = 1,...,M+d.
 $$
 
-- In practice, we observe $p$ discrete points along each $x_i(t)$ (possibly with noise).
+- In practice, we observe $p$ discrete points along each $x_i(t)$
+- We have options for how we approximate $\mathbf{U}_{(ij)}$
 
 ## Numerical Approximation
 
-- If we have a dense observation grid, and negligible instrument noise, we can approximate $\mathbf{U}_{(ij)}$ by
+- Simple option: we can approximate $\mathbf{U}_{(ij)}$ by
 
 $$
 \mathbf{U}_{(ij)} \approx \frac{b-a}{p}\sum_{k=1}^px_i(t_k)B_j(t_k).
 $$
+
+- Assumes noise-free observations
+- Good if we have a dense observation grid
+
 
 ## Basis Expansion for Data
 
@@ -139,16 +178,19 @@ $$
 x_i(t) \approx \mathbf{c}_i'\mathbf{B}^x(t),
 $$
 
-where $\mathbf{B}^x(t)$ is a vector of $M_x + d$ B-spline basis functions and $\mathbf{c}_i$ is a vector of $M_x + d$ basis coefficients. In this case
+where $\mathbf{B}^x(t)$ is a vector of $M_x + d$ B-spline basis functions and $\mathbf{c}_i$ is a vector of $M_x + d$ basis coefficients. If we define
 
 $$
-\mathbf{U}_{(ij)} \approx \mathbf{C}\boldsymbol{\Theta},
+\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(t)B_j(t)dt,
 $$
-where $\mathbf{C}$ is an $n \times (M_x + d)$ matrix of basis coefficients and $\boldsymbol{\Theta}$ is an $(M_x + d) \times (M + d)$ matrix with elements
+
+then we can express $\mathbf{U}$ as
 
 $$
-\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(t)B_j(t)dt.
+\mathbf{U} \approx \mathbf{C}\boldsymbol{\Theta},
 $$
+where $\mathbf{C}$ is an $n \times (M_x + d)$ matrix of basis coefficients.
+
 
 
 ## Example I: Generated Responses
