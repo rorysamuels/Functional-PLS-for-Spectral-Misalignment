@@ -81,7 +81,7 @@ where $\beta(w)$ is a functional valued coefficient.
 Given weight functions $r_1(w),...,r_{k-1}(w)$, the $k$th FPLS weight function is given by
 
 $$
-\arg\max_{w(t)} \text{Cov}^2\left(y, \int_a^bx(w)r(w)dw\right), \quad \text{subject to:}
+\arg\max_{w(w)} \text{Cov}^2\left(y, \int_a^bx(w)r(w)dw\right), \quad \text{subject to:}
 $$
 
 $$
@@ -94,7 +94,7 @@ $$
 
 ## Basis Expansion for Weight Functions
 
-Let $\mathbf{B}(t) = (B_1(t),...,B_{M+d}(t))'$ be a vector of $M+d$ B-spline basis functions of degree $d$ defined over $M-1$ equally spaced knots on $[a,b]$.
+Let $\mathbf{B}(w) = (B_1(w),...,B_{M+d}(w))'$ be a vector of $M+d$ B-spline basis functions of degree $d$ defined over $M-1$ equally spaced knots on $[a,b]$.
 
 We can approximate the $m$th weight function by 
 
@@ -143,7 +143,7 @@ Let $\mathbf{R}$ be the $p\times K$ matrix whose columns are the first $K$ PLS e
 The estimated functional coefficient is then
 
 $$
-\hat{\beta}_{FPLS}(t) = (\mathbf{R}\boldsymbol{\alpha})'\mathbf{B}(t)
+\hat{\beta}_{FPLS}(w) = (\mathbf{R}\boldsymbol{\alpha})'\mathbf{B}(w)
 $$
 
 
@@ -152,10 +152,10 @@ $$
 The key to functional partial least squares is obtaining
 
 $$
-\mathbf{U}_{(ij)} = \int_a^bx_i(t)B_j(t)dt,\ \ i = 1,...,n,\ \ j = 1,...,M+d.
+\mathbf{U}_{(ij)} = \int_a^bx_i(w)B_j(w)dt,\ \ i = 1,...,n,\ \ j = 1,...,M+d.
 $$
 
-- In practice, we observe $p$ discrete points along each $x_i(t)$
+- In practice, we observe $p$ discrete points along each $x_i(w)$
 - We have options for how we approximate $\mathbf{U}_{(ij)}$
 
 ## Numerical Approximation
@@ -163,7 +163,7 @@ $$
 - Simple option: we can approximate $\mathbf{U}_{(ij)}$ by
 
 $$
-\mathbf{U}_{(ij)} \approx \frac{b-a}{p}\sum_{k=1}^px_i(t_k)B_j(t_k).
+\mathbf{U}_{(ij)} \approx \frac{b-a}{p}\sum_{k=1}^px_i(w_k)B_j(w_k).
 $$
 
 - Assumes noise-free observations
@@ -175,13 +175,13 @@ $$
 - Alternatively, we can expand each observation onto a set of suitable basis functions:
 
 $$
-x_i(t) \approx \mathbf{c}_i'\mathbf{B}^x(t),
+x_i(w) \approx \mathbf{c}_i'\mathbf{B}^x(w),
 $$
 
-where $\mathbf{B}^x(t)$ is a vector of $M_x + d$ B-spline basis functions and $\mathbf{c}_i$ is a vector of $M_x + d$ basis coefficients. If we define
+where $\mathbf{B}^x(w)$ is a vector of $M_x + d$ B-spline basis functions and $\mathbf{c}_i$ is a vector of $M_x + d$ basis coefficients. If we define
 
 $$
-\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(t)B_j(t)dt,
+\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(w)B_j(w)dt,
 $$
 
 then we can express $\mathbf{U}$ as
@@ -203,39 +203,39 @@ source("../example_generated_data.R")
 We generated $n = 500$ scalar responses from
 
 $$
-y_i = \int_0^1x_i(t)\beta(t)dt + \epsilon_i
+y_i = \int_0^1x_i(w)\beta(w)dt + \epsilon_i
 $$
 
-- $x_i(t)$: random linear combinations of cubic B-spline basis functions\footnote{The basis functions were defined over $50$ knots and all coefficients were generated from a standard normal distribution.}
+- $x_i(w)$: random linear combinations of cubic B-spline basis functions\footnote{The basis functions were defined over $50$ knots and all coefficients were generated from a standard normal distribution.}
 
-- $\beta(t) = 10(t-1)^2 + 30\text{cos}(4\pi t^3)$
+- $\beta(w) = 10(w-1)^2 + 30\text{cos}(4\pi t^3)$
 
 - $\epsilon_i \sim N(0,\sigma_\epsilon^2)$\footnote{The error variance $\sigma_\epsilon^2$ was chosen such that the signal-to-noise ratio was $5$.}
 
 
 ## Example I: Generated Predictors
 
-To simulate misalignment, we sampled each $x_i(t)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
+To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
 
 - $G_A$: $t = 0,.0024,.0048,...,1$
 - $G_B$: $t = 0,.0068,.0136,...,1$
 
-The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(t)$ on 
+The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
 both $G_A$ and $G_B$, for $i = 1,...,500$.
 
 \vspace{53pt}
 
 ## Example I: Generated Predictors
 
-To simulate misalignment, we sampled each $x_i(t)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
+To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
 
 - $G_A$: $t = 0,.0024,.0048,...,1$
 - $G_B$: $t = 0,.0068,.0136,...,1$
 
-The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(t)$ on 
+The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
 both $G_A$ and $G_B$, for $i = 1,...,500$.
 
-- Goal: predict $y$ from $x(t)$ observed on $G_B$, using a model trained with $x(t)$ observed on $G_A$.
+- Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
   + $80/20$ train/test split.
 
 ## Example I: Misaligned Grids
@@ -245,7 +245,7 @@ tibble(x = X_A_train[30,], t = grd_A) %>%
   ggplot(aes(t,x))+
   ggtitle("True Functional Predictor")+
   geom_line()+
-  labs(y = TeX("$x_{30}(t)$"))+
+  labs(y = TeX("$x_{30}(w)$"))+
   lims(x = c(0,1), y = c(-1.75,1.75))+
   theme_bw()+
   theme(text = element_text(size = 14))
@@ -260,7 +260,7 @@ tibble(x = X_A_train[30,], t = grd_A) %>%
   ggtitle("Observed Functional Predictor: Observation Grid A")+
   geom_line(alpha = .5)+
   geom_point()+
-  labs(y = TeX("$x_{30}(t)$"))+
+  labs(y = TeX("$x_{30}(w)$"))+
   lims(x = c(0,1), y = c(-1.75,1.75))+
   theme_bw()+
   theme(text = element_text(size = 14))
@@ -274,7 +274,7 @@ tibble(x = X_B_train[30,], t = grd_B) %>%
   ggtitle("Observed Functional Predictor: Observation Grid B")+
   geom_line(alpha = .5)+
   geom_point()+
-  labs(y = TeX("$x_{30}(t)$"))+
+  labs(y = TeX("$x_{30}(w)$"))+
   lims(x = c(0,1), y = c(-1.75,1.75))+
   theme_bw()+
   theme(text = element_text(size = 14))
@@ -289,7 +289,7 @@ tibble(x = c(X_A_train[30,],X_B_train[30,]) , t = c(grd_A,grd_B), grid = rep(c("
   ggtitle("Functional Predictor on Two Observation Grids")+
   geom_line(color = 'black', alpha = .5)+
   geom_point(size = 2)+
-  labs(y = TeX("$x_{30}(t)$"))+
+  labs(y = TeX("$x_{30}(w)$"))+
   lims(x = c(.80,.90), y = c(0,1))+
   theme_bw()+
   theme(text = element_text(size = 14))
@@ -299,14 +299,14 @@ tibble(x = c(X_A_train[30,],X_B_train[30,]) , t = c(grd_A,grd_B), grid = rep(c("
 
 ## Example I: Two Approaches
 
-- Goal: predict $y$ from $x(t)$ observed on $G_B$, using a model trained with $x(t)$ observed on $G_A$.
+- Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
   + $80/20$ train/test split.
   
 Classical PLS Approach:
 
-- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(t)$ on $G_A$
+- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
 - Select PLS coefficients closest to points on $G_B$, $\boldsymbol{\hat{\beta}}_B$
-- Predict $y^{test}$ using observations of $x^{test}(t)$ on $G_B$ and $\boldsymbol{\hat{\beta}}_B$
+- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\boldsymbol{\hat{\beta}}_B$
 
 
 \vspace{59pt}
@@ -314,20 +314,20 @@ Classical PLS Approach:
 
 ## Example I: Two Approaches
 
-- Goal: predict $y$ from $x(t)$ observed on $G_B$, using a model trained with $x(t)$ observed on $G_A$.
+- Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
   + $80/20$ train/test split.
   
 Classical PLS Approach:
 
-- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(t)$ on $G_A$
+- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
 - Select PLS coefficients closest to points on $G_B$, $\boldsymbol{\hat{\beta}}_B$
-- Predict $y^{test}$ using observations of $x^{test}(t)$ on $G_B$ and $\boldsymbol{\hat{\beta}}_B$
+- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\boldsymbol{\hat{\beta}}_B$
 
 
 Functional PLS approach:
 
-- Obtain $\hat{\beta}_{FPLS}(t)$ using observations of $x^{train}(t)$ on $G_A$
-- Predict $y^{test}$ using observations of $x^{test}(t)$ on $G_B$ and $\hat{\beta}(t)$.
+- Obtain $\hat{\beta}_{FPLS}(w)$ using observations of $x^{train}(w)$ on $G_A$
+- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\hat{\beta}(w)$.
 
 
 ## Example I: Classical PLS
@@ -340,12 +340,29 @@ tb_pls_adj <- tibble(beta = alpha_adj*p1, t = grd_B)
 ggplot()+
   ggtitle(TeX("PLS Coefficeints ($G_A$)"))+
   geom_line(data = tb_true, aes(t,beta), alpha = .5)+
-  geom_point(data = tb_pls, aes(t,beta))+
+  #geom_point(data = tb_pls, aes(t,beta))+
   labs(y = TeX("$\\hat{\\beta}$"))+
+  lims(y = c(-35,45))+
   theme_bw()+
   theme(text = element_text(size = 14))
 
 ```
+
+
+## Example I: Classical PLS
+
+```{r}
+ggplot()+
+  ggtitle(TeX("PLS Coefficeints ($G_A$)"))+
+  geom_line(data = tb_true, aes(t,beta), alpha = .5)+
+  geom_point(data = tb_pls, aes(t,beta))+
+  labs(y = TeX("$\\hat{\\beta}$"))+
+  lims(y = c(-35,45))+
+  theme_bw()+
+  theme(text = element_text(size = 14))
+```
+
+
 
 ## Example I: Classical PLS
 
@@ -355,6 +372,7 @@ ggplot()+
   geom_line(data = tb_true, aes(t,beta), alpha = .5)+
   geom_point(data = tb_pls_adj, aes(t,beta))+
   labs(y = TeX("$\\hat{\\beta}$"))+
+  lims(y = c(-35,45))+
   theme_bw()+
   theme(text = element_text(size = 14))
 ```
@@ -391,7 +409,7 @@ ggplot()+
   ggtitle("FPLS Coefficient")+
   geom_line(data = tb_true, aes(t,beta), alpha = .4)+
   geom_line(data = tb_fpls, aes(t,beta))+
-  labs(y = TeX("$\\hat{\\beta}(t)$"))+
+  labs(y = TeX("$\\hat{\\beta}(w)$"))+
   theme_bw()+
   theme(text = element_text(size = 14))
 
@@ -534,7 +552,7 @@ tibble(x = X_B[1,], wavelength = grdB) %>%
 ```{r}
 pmse_label_A <- glue("PMSE = {round(pmse(y_test,pls_preds_A),4)}")
 pmse_label_B <- glue("PMSE = {round(pmse(y_test,pls_preds_B),4)}")
-tb_ann <- tibble(x = c(-2.5,-2.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
+tb_ann <- tibble(x = c(-3.5,-3.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
 
 
 tibble(preds = c(pls_preds_A,pls_preds_B), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
@@ -555,10 +573,10 @@ tibble(preds = c(pls_preds_A,pls_preds_B), y = rep(y_test,2), grid = rep(c("A","
 ```{r}
 pmse_label_A <- glue("PMSE = {round(pmse(y_test,fpls_preds_A_basis),4)}")
 pmse_label_B <- glue("PMSE = {round(pmse(y_test,fpls_preds_B_basis),4)}")
-tb_ann <- tibble(x = c(-2.5,-2.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
+tb_ann <- tibble(x = c(-3.5,-3.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
 
 
-tibble(preds = c(fpls_preds_A,fpls_preds_B), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
+tibble(preds = c(fpls_preds_A_basis,fpls_preds_B_basis), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
   ggplot(aes(y,preds))+
   geom_point()+
   facet_wrap(~grid)+
@@ -569,6 +587,33 @@ tibble(preds = c(fpls_preds_A,fpls_preds_B), y = rep(y_test,2), grid = rep(c("A"
   theme_bw()+
   theme(text = element_text(size = 14))
 ```
+
+
+## Appendix I: Intuition Behind FPLS Coefficient
+
+Recall that the (0-intercept) FLM:
+
+\begin{equation} \label{eq:FLM}
+y_i = \int_a^bx_i(w)\beta(w)dw + \epsilon_i.
+\end{equation}
+
+When we approximate $r(w)$ as $r(w) \approx \mathbf{b}'\mathbf{B}(w)$, we implicitly assume 
+
+\begin{equation} \label{eq:betaapprox}
+\beta(w) \approx \boldsymbol{\gamma}'\mathbf{B}(w),
+\end{equation}
+
+allowing us to re-write (\ref{eq:FLM}) as 
+
+$$
+y_i = \mathbf{U}\boldsymbol{\gamma} + \epsilon_i.
+$$
+
+Performing PLS of $\mathbf{U}$ on $\mathbf{y}$ yields $\hat{\boldsymbol{\gamma}} = \mathbf{R}\boldsymbol{\alpha}$. Hence, from (\ref{eq:betaapprox}),
+
+$$
+\hat{\beta}(w) = (\mathbf{R}\boldsymbol{\alpha})'\mathbf{B}(w).
+$$
 
 
 
