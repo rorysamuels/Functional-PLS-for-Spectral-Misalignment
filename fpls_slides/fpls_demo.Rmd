@@ -81,11 +81,11 @@ where $\beta(w)$ is a functional valued coefficient.
 Given weight functions $r_1(w),...,r_{k-1}(w)$, the $k$th FPLS weight function is given by
 
 $$
-\arg\max_{w(w)} \text{Cov}^2\left(y, \int_a^bx(w)r(w)dw\right), \quad \text{subject to:}
+\arg\max_{r(w)} \text{Cov}^2\left(y, \int_a^bx(w)r(w)dw\right), \quad \text{subject to:}
 $$
 
 $$
-\text{Cov}\left(\int_a^bx(w)r_m(w)dt,\int_a^bx(w)r(w)dt\right) = 0\ \ \text{for}\ \ m = 1,...,k-1,\quad \text{and}
+\text{Cov}\left(\int_a^bx(w)r_m(w)dw,\int_a^bx(w)r(w)dw\right) = 0\ \ \text{for}\ \ m = 1,...,k-1,\quad \text{and}
 $$
 
 $$ 
@@ -152,7 +152,7 @@ $$
 The key to functional partial least squares is obtaining
 
 $$
-\mathbf{U}_{(ij)} = \int_a^bx_i(w)B_j(w)dt,\ \ i = 1,...,n,\ \ j = 1,...,M+d.
+\mathbf{U}_{(ij)} = \int_a^bx_i(w)B_j(w)dw,\ \ i = 1,...,n,\ \ j = 1,...,M+d.
 $$
 
 - In practice, we observe $p$ discrete points along each $x_i(w)$
@@ -181,7 +181,7 @@ $$
 where $\mathbf{B}^x(w)$ is a vector of $M_x + d$ B-spline basis functions and $\mathbf{c}_i$ is a vector of $M_x + d$ basis coefficients. If we define
 
 $$
-\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(w)B_j(w)dt,
+\boldsymbol{\Theta}_{(ij)} = \int_a^bB^x_i(w)B_j(w)dw,
 $$
 
 then we can express $\mathbf{U}$ as
@@ -203,12 +203,12 @@ source("../example_generated_data.R")
 We generated $n = 500$ scalar responses from
 
 $$
-y_i = \int_0^1x_i(w)\beta(w)dt + \epsilon_i
+y_i = \int_0^1x_i(w)\beta(w)dw + \epsilon_i
 $$
 
 - $x_i(w)$: random linear combinations of cubic B-spline basis functions\footnote{The basis functions were defined over $50$ knots and all coefficients were generated from a standard normal distribution.}
 
-- $\beta(w) = 10(w-1)^2 + 30\text{cos}(4\pi t^3)$
+- $\beta(w) = 10(w-1)^2 + 30\text{cos}(4\pi w^3)$
 
 - $\epsilon_i \sim N(0,\sigma_\epsilon^2)$\footnote{The error variance $\sigma_\epsilon^2$ was chosen such that the signal-to-noise ratio was $5$.}
 
@@ -217,8 +217,8 @@ $$
 
 To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
 
-- $G_A$: $t = 0,.0024,.0048,...,1$
-- $G_B$: $t = 0,.0068,.0136,...,1$
+- $G_A$: $w = 0,.0024,.0048,...,1$
+- $G_B$: $w = 0,.0068,.0136,...,1$
 
 The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
 both $G_A$ and $G_B$, for $i = 1,...,500$.
@@ -229,8 +229,8 @@ both $G_A$ and $G_B$, for $i = 1,...,500$.
 
 To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, $G_A$ and $G_B$, of length $425$ and $150$ respectively.
 
-- $G_A$: $t = 0,.0024,.0048,...,1$
-- $G_B$: $t = 0,.0068,.0136,...,1$
+- $G_A$: $w = 0,.0024,.0048,...,1$
+- $G_B$: $w = 0,.0068,.0136,...,1$
 
 The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
 both $G_A$ and $G_B$, for $i = 1,...,500$.
@@ -327,7 +327,7 @@ Classical PLS Approach:
 Functional PLS approach:
 
 - Obtain $\hat{\beta}_{FPLS}(w)$ using observations of $x^{train}(w)$ on $G_A$
-- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\hat{\beta}(w)$.
+- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\hat{\beta}_{FPLS}(w)$.
 
 
 ## Example I: Classical PLS
@@ -477,7 +477,7 @@ We applied the same method to the AOP Crown data to predict \texttt{d15N} from s
 - $n = 2515$ observations
 - $p_A = 350$ spectral points per spectra.
 
-To simulate spectral misalignment, we expanded the spectra onto a set of $52$ cubic B-splines and sampled along an observation grid of $p_B = 200$ points.
+To simulate spectral misalignment, we expanded the spectra onto a set of $52$ cubic B-splines and sampled along an observation grid of $p_B = 150$ points.
 
 ## Example II: Spectra
 
@@ -606,7 +606,7 @@ When we approximate $r(w)$ as $r(w) \approx \mathbf{b}'\mathbf{B}(w)$, we implic
 allowing us to re-write (\ref{eq:FLM}) as 
 
 $$
-y_i = \mathbf{U}\boldsymbol{\gamma} + \epsilon_i.
+\mathbf{y} = \mathbf{U}\boldsymbol{\gamma} + \mathbf{\epsilon}.
 $$
 
 Performing PLS of $\mathbf{U}$ on $\mathbf{y}$ yields $\hat{\boldsymbol{\gamma}} = \mathbf{R}\boldsymbol{\alpha}$. Hence, from (\ref{eq:betaapprox}),
