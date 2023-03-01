@@ -2,6 +2,10 @@
 # The predictive performance is compared with traditional PLS, where the 
 # misaligned data is "re-aligned" using linear approximations.
 
+# To create misaligned data, one observation grid includes every other spectral
+# point (odd indices), and the other observation grid includes the remaining 
+# spectral points (even indices)
+
 library(tidyverse)
 library(splines2)
 library(pls)
@@ -103,15 +107,6 @@ alpha <- (plsr_fit$coefficients[,,k])
 pls_preds_A <- as.numeric(X_A_test%*%alpha)
 pls_preds_B_approx <- as.numeric(X_B_approx_test%*%alpha[-1])
 
-pmse(y_test,pls_preds_A)
-pmse(y_test,pls_preds_B_approx)
-
-
-
-
-
-
-
 
 ##### Functional Partial Least Squares without Basis Approx for Data #####
 
@@ -140,15 +135,9 @@ fpls_preds_B_basis <- pred_fplsr(X_B_test[,-pB], grdB[-pB], fplsr_fit_basis)
 
 
 
-pmse(fpls_preds_A_basis,y_test)
-pmse(fpls_preds_B_basis,y_test)
 
 
 
-
-
-
-##### Results #####
 ##### Results #####
 #pmse(pls_preds_A,y_test)
 pmse_lin_approx <- pmse(pls_preds_B_approx,y_test)
@@ -163,9 +152,9 @@ pmse_fpls_basis <- pmse(fpls_preds_B_basis,y_test)
 
 
 # 66% reduction in pmse using fpls over linear approximation
-#(pmse_fpls - pmse_lin_approx)/pmse_lin_approx
+(pmse_fpls - pmse_lin_approx)/pmse_lin_approx
 # 67% reduction in pmse using fpls + basis expansion over linear approximation
-#(pmse_fpls_basis - pmse_lin_approx)/pmse_lin_approx
+(pmse_fpls_basis - pmse_lin_approx)/pmse_lin_approx
 
 
 

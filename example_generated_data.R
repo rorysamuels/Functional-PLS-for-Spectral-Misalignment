@@ -1,3 +1,8 @@
+# This script demonstrates functional PLS with misaligned data (generated).
+# The predictive performance is compared with traditional PLS, where the PLS
+# coefficients closest to the misaligned spectral points are used to make
+# predictions.
+
 library(tidyverse)
 library(splines2)
 library(pls)

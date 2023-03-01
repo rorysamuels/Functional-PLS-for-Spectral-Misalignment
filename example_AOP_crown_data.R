@@ -3,6 +3,10 @@
 # coefficients closest to the misaligned spectral points are used to make
 # predictions.
 
+# To create misaligned data, each observation is projected onto a set
+# of B-splines, and samples along two different observation grids are taken
+# from the functional observations.
+
 library(tidyverse)
 library(splines2)
 library(pls)
@@ -146,16 +150,22 @@ fpls_preds_B_basis <- pred_fplsr(X_B_test, grdB, fplsr_fit_basis)
 
 
 ##### Results #####
-pmse(pls_preds_A,y_test)
-pmse(pls_preds_B,y_test)
+#pmse(pls_preds_A,y_test)
+pmse_lin_approx <- pmse(pls_preds_B_approx,y_test)
 
 
-pmse(fpls_preds_A,y_test)
-pmse(fpls_preds_B,y_test)
+#pmse(fpls_preds_A,y_test)
+pmse_fpls <- pmse(fpls_preds_B,y_test)
 
 
-pmse(fpls_preds_A_basis,y_test)
-pmse(fpls_preds_B_basis,y_test)
+#pmse(fpls_preds_A_basis,y_test)
+pmse_fpls_basis <- pmse(fpls_preds_B_basis,y_test)
+
+
+# 66% reduction in pmse using fpls over linear approximation
+(pmse_fpls - pmse_lin_approx)/pmse_lin_approx
+# 67% reduction in pmse using fpls + basis expansion over linear approximation
+(pmse_fpls_basis - pmse_lin_approx)/pmse_lin_approx
 
 
 
