@@ -1,7 +1,6 @@
 # This script demonstrates functional PLS with misaligned data (AOP Crown data-set).
-# The predictive performance is compared with traditional PLS, where the PLS
-# coefficients closest to the misaligned spectral points are used to make
-# predictions.
+# The predictive performance is compared with traditional PLS, where the 
+# misaligned data is "re-aligned" using linear approximations.
 
 library(tidyverse)
 library(splines2)
@@ -30,34 +29,39 @@ y <- xy_data$y
 
 # Number of observations
 n <- nrow(X)
-
+# Number of original spectral points
+p <- ncol(X)
 # Original observation grid (scaled to unit interval)
-pA <- ncol(X)
-grdA <- seq(0,1,length.out = pA)
+grd <- seq(0,1,length.out = p)
 
-# Misaligned observtion grid
-pB <- 100
-grdB <- seq(0,1,length.out = pB)
+# Index of every other point
+sel <- seq(1,p,by = 2)
 
-# Basis expansion for reflectance data (done to create misaligned observations)
+# Observations from instrument A
+X_A <- X[,sel]
+# Instrument A observation grd
+grdA <- grd[sel]
+# Number of spectral points for instrument A
+pA <- length(grdA)
 
-# Degree for cubic B-splines
-d <- 3
-# Number of internal knots - 1
-M <- 50
-# Internal knots for basis functions
-knots <- seq(0, 1, length.out = M+1)[-c(1,M+1)]
+# Observations from instrument B
+X_B <- X[,-sel]
+# Instrumnet B observation grd
+grdB <- grd[-sel]
+# Number of spectral points for instrument B
+pB <- length(grdB)
 
-# Matrix of basis functions evaluated on original observation grid
-basis_spectra <- bSpline(grdA, knots = knots, degree = d, intercept = T)
+# Draw straight lines to approximate X_B on grdA
+X_B_approx <- 
+t(
+apply(X_B,1,function(s){
+  approxfun(grdB,s)(grdA[-1])
+})
+)
 
-# Coefficients from basis expansion
-A <- get_basis_coefs(X,basis_spectra)
 
-# Spectral points matching original observation grid (instrument A)
-X_A <- (A%*%t(predict(basis_spectra,grdA)))
-# Spectral points on mislaigned grid (instrument B)
-X_B <- (A%*%t(predict(basis_spectra,grdB)))
+
+
 
 # Train/Test Split
 set.seed(10)
@@ -65,10 +69,11 @@ train_ind <- sample(1:n,floor(.8*n))
 
 X_A_train <- X_A[train_ind,]
 X_B_train <- X_B[train_ind,]
+X_B_approx_train <- X_B_approx[train_ind,]
 
 X_A_test <- X_A[-train_ind,]
 X_B_test <- X_B[-train_ind,]
-
+X_B_approx_test <- X_B_approx[-train_ind,]
 
 y_train <- y[train_ind]
 y_test <- y[-train_ind]
@@ -88,19 +93,18 @@ y_test <- y[-train_ind]
 # Choose number of componenets which minimize CV PRESS
 #k <- which.min(plsr_fit$validation$PRESS)
 
-k <- 17
+k <- 14
 plsr_fit <- plsr(y_train~X_A_train, ncomp = k)
 
 # Coefficients from plsr model
 alpha <- (plsr_fit$coefficients[,,k])
 
-# Coefficients closest to observavtion grid of spectra from instrument B
-alpha_adj <- alpha[find_closest(grdA,grdB)]
-
 # Predictions
 pls_preds_A <- as.numeric(X_A_test%*%alpha)
-pls_preds_B <- as.numeric(X_B_test%*%alpha_adj)
+pls_preds_B_approx <- as.numeric(X_B_approx_test%*%alpha[-1])
 
+pmse(y_test,pls_preds_A)
+pmse(y_test,pls_preds_B_approx)
 
 
 
@@ -117,10 +121,7 @@ fplsr_fit <- fplsr(y_train, X_A_train, grd = grdA, M = 30, ncomp = k)
 
 # Predictions
 fpls_preds_A <- pred_fplsr(X_A_test, grdA, fplsr_fit)
-fpls_preds_B <- pred_fplsr(X_B_test, grdB, fplsr_fit)
-
-
-
+fpls_preds_B <- pred_fplsr(X_B_test[,-pB], grdB[-pB], fplsr_fit)
 
 
 
@@ -135,23 +136,8 @@ fplsr_fit_basis <- fplsr(y_train, X_A_train, grd = grdA, M = 30, M_x = 25, ncomp
 
 # Predictions
 fpls_preds_A_basis <- pred_fplsr(X_A_test, grdA, fplsr_fit_basis)
-fpls_preds_B_basis <- pred_fplsr(X_B_test, grdB, fplsr_fit_basis)
+fpls_preds_B_basis <- pred_fplsr(X_B_test[,-pB], grdB[-pB], fplsr_fit_basis)
 
-
-
-
-
-
-
-
-
-##### Results #####
-pmse(pls_preds_A,y_test)
-pmse(pls_preds_B,y_test)
-
-
-pmse(fpls_preds_A,y_test)
-pmse(fpls_preds_B,y_test)
 
 
 pmse(fpls_preds_A_basis,y_test)
@@ -162,7 +148,24 @@ pmse(fpls_preds_B_basis,y_test)
 
 
 
+##### Results #####
+##### Results #####
+#pmse(pls_preds_A,y_test)
+pmse_lin_approx <- pmse(pls_preds_B_approx,y_test)
 
+
+#pmse(fpls_preds_A,y_test)
+pmse_fpls <- pmse(fpls_preds_B,y_test)
+
+
+#pmse(fpls_preds_A_basis,y_test)
+pmse_fpls_basis <- pmse(fpls_preds_B_basis,y_test)
+
+
+# 66% reduction in pmse using fpls over linear approximation
+#(pmse_fpls - pmse_lin_approx)/pmse_lin_approx
+# 67% reduction in pmse using fpls + basis expansion over linear approximation
+#(pmse_fpls_basis - pmse_lin_approx)/pmse_lin_approx
 
 
 
