@@ -4,7 +4,7 @@
 
 # To create misaligned data, one observation grid includes every other spectral
 # point (odd indices), and the other observation grid includes the remaining 
-# spectral points (even indices)
+# spectral points (even indices).
 
 library(tidyverse)
 library(splines2)
@@ -116,7 +116,7 @@ fplsr_fit <- fplsr(y_train, X_A_train, grd = grdA, M = 30, ncomp = k)
 
 # Predictions
 fpls_preds_A <- pred_fplsr(X_A_test, grdA, fplsr_fit)
-fpls_preds_B <- pred_fplsr(X_B_test[,-pB], grdB[-pB], fplsr_fit)
+fpls_preds_B <- pred_fplsr(X_B_test, grdB, fplsr_fit)
 
 
 
@@ -131,7 +131,7 @@ fplsr_fit_basis <- fplsr(y_train, X_A_train, grd = grdA, M = 30, M_x = 25, ncomp
 
 # Predictions
 fpls_preds_A_basis <- pred_fplsr(X_A_test, grdA, fplsr_fit_basis)
-fpls_preds_B_basis <- pred_fplsr(X_B_test[,-pB], grdB[-pB], fplsr_fit_basis)
+fpls_preds_B_basis <- pred_fplsr(X_B_test, grdB, fplsr_fit_basis)
 
 
 

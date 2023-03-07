@@ -220,7 +220,7 @@ To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, 
 - $G_A$: $w = 0,.0024,.0048,...,1$
 - $G_B$: $w = 0,.0068,.0136,...,1$
 
-The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
+The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on
 both $G_A$ and $G_B$, for $i = 1,...,500$.
 
 \vspace{53pt}
@@ -232,7 +232,7 @@ To simulate misalignment, we sampled each $x_i(w)$ along two observation grids, 
 - $G_A$: $w = 0,.0024,.0048,...,1$
 - $G_B$: $w = 0,.0068,.0136,...,1$
 
-The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on 
+The final data-set consisted of $y_i$ and corresponding discrete observations of $x_i(w)$ on
 both $G_A$ and $G_B$, for $i = 1,...,500$.
 
 - Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
@@ -301,7 +301,7 @@ tibble(x = c(X_A_train[30,],X_B_train[30,]) , t = c(grd_A,grd_B), grid = rep(c("
 
 - Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
   + $80/20$ train/test split.
-  
+
 Classical PLS Approach:
 
 - Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
@@ -316,7 +316,7 @@ Classical PLS Approach:
 
 - Goal: predict $y$ from $x(w)$ observed on $G_B$, using a model trained with $x(w)$ observed on $G_A$.
   + $80/20$ train/test split.
-  
+
 Classical PLS Approach:
 
 - Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
@@ -403,7 +403,7 @@ tibble(preds = c(pls_preds_A,pls_preds_B), y = rep(Y_test,2), grid = rep(c("A","
 
 
 ```{r}
-tb_fpls <- tibble(beta = fplsr_fit_basis$beta_fun(grd_A), t = grd_A) 
+tb_fpls <- tibble(beta = fplsr_fit_basis$beta_fun(grd_A), t = grd_A)
 
 ggplot()+
   ggtitle("FPLS Coefficient")+
@@ -418,7 +418,7 @@ ggplot()+
 
 
 
-## Example I: Functional PLS 
+## Example I: Functional PLS
 
 ```{r}
 pmse_label_A_f <- glue("PMSE = {round(pmse(Y_test,fpls_preds_A_basis),4)}")
@@ -442,7 +442,7 @@ tibble(preds = c(fpls_preds_A_basis,fpls_preds_B_basis), y = rep(Y_test,2), grid
 
 
 
-## Example I: Functional PLS 
+## Example I: Functional PLS
 
 ```{r}
 pmse_label_A_f <- glue("PMSE = {round(pmse(Y_test,fpls_preds_A),4)}")
@@ -468,125 +468,244 @@ tibble(preds = c(fpls_preds_A,fpls_preds_B), y = rep(Y_test,2), grid = rep(c("A"
 ## Example II: AOP Crown Data
 
 ```{r}
-source('../example_AOP_crown_data.R')
+source('../example_AOP_crown_data_linear_approx.R')
 ```
 
 
-We applied the same method to the AOP Crown data to predict \texttt{d15N} from spectra. After joining the site trait data and spectra by \texttt{SampleSiteID}, and removing both "bad bands" and NA observations we had:
+We applied the same method to the AOP Crown data-set to predict \texttt{d15N} from observed spectra. After joining the site trait data and spectra by \texttt{SampleSiteID}, and removing both "bad bands" and NA observations we had:
 
 - $n = 2515$ observations
 - $p_A = 350$ spectral points per spectra.
 
-To simulate spectral misalignment, we expanded the spectra onto a set of $52$ cubic B-splines and sampled along an observation grid of $p_B = 150$ points.
+To simulate misalignment, we sampled every other spectral point for observation grid A and assigned the remaining spectral points to grid B.
+
+- Grid A ($G_A$): odd indices 
+- Grid B ($G_B$): even indices.
 
 ## Example II: Spectra
 
 ```{r}
-tibble(x = X[1,], wavelength = good_grd) %>%
-  ggplot(aes(wavelength,x))+
-  ggtitle("Example Spectra")+
-  labs(y = "Reflectance")+
-  geom_point()+
-  theme_bw()+
-  theme(text = element_text(size = 14))
-```
+xa <- X_A_test[1,] 
+xbapprox <- X_B_approx_test[1,] 
+xb <- X_B_test[1,]
 
-## Example II: Spectra
-
-```{r}
-tibble(x = X[1,], wavelength = good_grd) %>%
-  ggplot(aes(wavelength,x))+
-  ggtitle("Example Spectra: Smoothed")+
-  labs(y = "Reflectance")+
-  geom_line()+
-  theme_bw()+
-  theme(text = element_text(size = 14))
-
-```
-
-## Example II: Spectra
-
-```{r}
-
-tibble(x = X_A[1,], wavelength = grdA) %>%
-  ggplot(aes(wavelength,x))+
-  ggtitle("Example Spectra: Smoothed + Scaled Grid")+
-  labs(y = "Reflectance")+
-  geom_line()+
-  theme_bw()+
-  theme(text = element_text(size = 14))
-
-```
-
-## Example II: Spectra
-
-```{r}
-
-tibble(x = X_A[1,], wavelength = grdA) %>%
-  ggplot(aes(wavelength,x))+
-  ggtitle("Example Spectra: Instrument A")+
-  labs(y = "Reflectance")+
-  geom_point()+
-  theme_bw()+
-  theme(text = element_text(size = 14))
+tbxa <- tibble(value = xa, grid = grdA)
+tbxbapprox <- tibble(value = xbapprox, grid = grdA[-1])
+tbxb <- tibble(value = xb, grid = grdB)
 
 
-```
 
 
-## Example II: Spectra
 
-```{r}
-tibble(x = X_B[1,], wavelength = grdB) %>%
-  ggplot(aes(wavelength,x))+
-  ggtitle("Example Spectra: Instrument B")+
-  labs(y = "Reflectance")+
-  geom_point()+
+ggplot()+
+  ggtitle("Example Spectra (Scaled Grid)")+
+  geom_point(data = tbxa, aes(grid,value))+
+  geom_point(data = tbxb, aes(grid, value))+
+  labs(x = "wavelength", y = "reflectance")+
   theme_bw()+
   theme(text = element_text(size = 14))
 ```
 
 
-## Classical PLS Approach
+## Example II: Two Observation Grids
+
+```{r}
+
+ggplot()+
+  ggtitle("Example Spectra (Scaled Grid)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), alpha = .75)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), alpha = .75)+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
+  labs(x = "wavelength", y = "reflectance")+
+  theme_bw()+
+  theme(legend.position = c(.75,.85),
+        text = element_text(size = 14))
+
+
+```
+
+
+## Example II: Two Approaches
+
+- Goal: predict \texttt{d15N} from spectra observed on $G_B$, using a model trained with spectra observed on $G_A$.
+  + $80/20$ train/test split.
+
+Classical PLS Approach + Linear Approximation:
+
+- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
+- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$ with straight lines
+- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$
+
+\vspace{59pt}
+
+## Example II: Two Approaches
+
+- Goal: predict \texttt{d15N} from spectra observed on $G_B$, using a model trained with spectra observed on $G_A$.
+  + $80/20$ train/test split.
+
+Classical PLS Approach + Linear Approximation:
+
+- Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
+- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$ with straight lines
+- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$
+
+Functional PLS approach:
+
+- Obtain $\hat{\beta}_{FPLS}(w)$ using observations of $x^{train}(w)$ on $G_A$
+- Predict $y^{test}$ using observations of $x^{test}(w)$ on $G_B$ and $\hat{\beta}_{FPLS}(w)$.
+
+
+## Example II: Linear Approximation
+
+```{r}
+
+ggplot()+
+  ggtitle("Example Spectra (Scaled Grid)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), alpha = .75)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), alpha = .75)+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
+  labs(x = "wavelength", y = "reflectance")+
+  theme_bw()+
+  theme(legend.position = c(.75,.85),
+        text = element_text(size = 14))
+
+
+```
+
+## Example II: Linear Approximation
+
+```{r}
+
+ggplot()+
+  ggtitle("Example Spectra (Zoomed In)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3)+
+  lims(x = c(.247,.303), y = c(3250,4250))+
+  labs(x = "wavelength", y = "reflectance")+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
+  theme_bw()+
+  theme(legend.position = c(.15,.85),
+        text = element_text(size = 14))
+
+
+```
+
+
+## Example II: Linear Approximation
+
+```{r}
+ggplot()+
+  ggtitle("Example Spectra (Zoomed In)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3)+
+  labs(x = "wavelength", y = "reflectance")+
+  geom_line(data = tbxb, aes(grid,value))+
+  lims(x = c(.247,.303), y = c(3250,4250))+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
+  theme_bw()+
+  theme(legend.position = c(.15,.85),
+        text = element_text(size = 14))
+
+```
+
+
+## Example II: Linear Approximation
+
+```{r}
+
+ggplot()+
+  ggtitle("Example Spectra (Zoomed In)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3, alpha = .2)+
+  geom_line(data = tbxb, aes(grid,value))+
+  labs(x = "wavelength", y = "reflectance")+
+  lims(x = c(.247,.303), y = c(3250,4250))+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
+  theme_bw()+
+  theme(legend.position = c(.15,.85),
+        text = element_text(size = 14))
+
+
+
+```
+
+
+## Example II: Linear Approximation
+
+```{r}
+ggplot()+
+  ggtitle("Example Spectra (Zoomed In)")+
+  geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
+  geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3, alpha = .2)+
+  geom_point(data = tbxbapprox, aes(grid, value,  color = 'Linear approx: B to A'), size = 3)+
+  geom_line(data = tbxb, aes(grid,value))+
+  labs(x = "wavelength", y = "reflectance")+
+  lims(x = c(.247,.303), y = c(3250,4250))+
+  scale_color_manual(name='Observation Grid',
+                     breaks=c('Instrument A', 'Instrument B', 'Linear approx: B to A'),
+                     values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4', 'Linear approx: B to A' = "#554ac3"))+
+  theme_bw()+
+  theme(legend.position = c(.15,.85),
+        text = element_text(size = 14))
+
+
+```
+
+## Example II: Classical PLS + Linear Approximation
 
 ```{r}
 pmse_label_A <- glue("PMSE = {round(pmse(y_test,pls_preds_A),4)}")
-pmse_label_B <- glue("PMSE = {round(pmse(y_test,pls_preds_B),4)}")
-tb_ann <- tibble(x = c(-3.5,-3.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
+pmse_label_B <- glue("PMSE = {round(pmse(y_test,pls_preds_B_approx),4)}")
+tb_ann <- tibble(x = c(-3,-3), y = c(5,5), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
 
 
-tibble(preds = c(pls_preds_A,pls_preds_B), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
+tibble(preds = c(pls_preds_A,pls_preds_B_approx), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
   ggplot(aes(y,preds))+
+  ggtitle("PLS Predictions")+
   geom_point()+
   facet_wrap(~grid)+
   geom_abline(slope = 1, intercept = 0)+
   geom_text(data = tb_ann, aes(x=x,y=y, label = label))+
   labs(x = TeX("$y_{test}$"), y = TeX("$\\hat{y}_{test}$"))+
-  lims(y = c(-4,4))+
   theme_bw()+
+  lims(x = c(-5,5), y = c(-5,5))+
   theme(text = element_text(size = 14))
-
 ```
 
-## Functional PLS Approach
+
+
+## Example II: Functional PLS
 
 ```{r}
-pmse_label_A <- glue("PMSE = {round(pmse(y_test,fpls_preds_A_basis),4)}")
-pmse_label_B <- glue("PMSE = {round(pmse(y_test,fpls_preds_B_basis),4)}")
-tb_ann <- tibble(x = c(-3.5,-3.5), y = c(4,4), label = c(pmse_label_A, pmse_label_B), grid = c("A","B"))
+pmse_label_A_f <- glue("PMSE = {round(pmse(y_test,fpls_preds_A_basis),4)}")
+pmse_label_B_f <- glue("PMSE = {round(pmse(y_test,fpls_preds_B_basis),4)}")
+tb_ann_f <- tibble(x = c(-3,-3), y = c(5,5), label = c(pmse_label_A_f, pmse_label_B_f), grid = c("A","B"))
+
 
 
 tibble(preds = c(fpls_preds_A_basis,fpls_preds_B_basis), y = rep(y_test,2), grid = rep(c("A","B"), each = length(y_test))) %>%
   ggplot(aes(y,preds))+
+  ggtitle("FPLS Predictions (with basis expansion)")+
   geom_point()+
   facet_wrap(~grid)+
   geom_abline(slope = 1, intercept = 0)+
-  geom_text(data = tb_ann, aes(x=x,y=y, label = label))+
+  geom_text(data = tb_ann_f, aes(x=x,y=y, label = label))+
   labs(x = TeX("$y_{test}$"), y = TeX("$\\hat{y}_{test}$"))+
-  lims(y = c(-4,4))+
   theme_bw()+
+  lims(x = c(-5,5), y = c(-5,5))+
   theme(text = element_text(size = 14))
 ```
+
 
 
 ## Appendix I: Intuition Behind FPLS Coefficient

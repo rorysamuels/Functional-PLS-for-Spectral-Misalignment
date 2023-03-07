@@ -110,22 +110,15 @@ pls_preds_B <- as.numeric(X_B_test%*%alpha_adj)
 
 
 
-
-
-
 ##### Functional Partial Least Squares without Basis Approx for Data #####
 
 
-fplsr_fit <- fplsr(y_train, X_A_train, grd = grdA, M = 30, ncomp = k)
+fplsr_fit <- fplsr(y_train, X_A_train, grd = grdA, M = 75, ncomp = k)
 
 
 # Predictions
 fpls_preds_A <- pred_fplsr(X_A_test, grdA, fplsr_fit)
 fpls_preds_B <- pred_fplsr(X_B_test, grdB, fplsr_fit)
-
-
-
-
 
 
 
@@ -150,8 +143,9 @@ fpls_preds_B_basis <- pred_fplsr(X_B_test, grdB, fplsr_fit_basis)
 
 
 ##### Results #####
+
 #pmse(pls_preds_A,y_test)
-pmse_lin_approx <- pmse(pls_preds_B_approx,y_test)
+pmse_pls <- pmse(pls_preds_B,y_test)
 
 
 #pmse(fpls_preds_A,y_test)
@@ -162,10 +156,10 @@ pmse_fpls <- pmse(fpls_preds_B,y_test)
 pmse_fpls_basis <- pmse(fpls_preds_B_basis,y_test)
 
 
-# 66% reduction in pmse using fpls over linear approximation
-(pmse_fpls - pmse_lin_approx)/pmse_lin_approx
-# 67% reduction in pmse using fpls + basis expansion over linear approximation
-(pmse_fpls_basis - pmse_lin_approx)/pmse_lin_approx
+# 9% reduction in pmse using fpls 
+(pmse_fpls - pmse_pls)/pmse_pls
+# 48% reduction in pmse using fpls + basis
+(pmse_fpls_basis - pmse_pls)/pmse_pls
 
 
 
