@@ -9,6 +9,7 @@ output:
 header-includes:
    - \usepackage{amsmath}
    - \usepackage{caption}
+   - \usepackage{booktabs}
    - \captionsetup[figure]{labelformat=empty}
 ---
 
@@ -472,7 +473,9 @@ source('../example_AOP_crown_data_linear_approx.R')
 ```
 
 
-We applied the same method to the AOP Crown data-set to predict \texttt{d15N} from observed spectra. After joining the site trait data and spectra by \texttt{SampleSiteID}, and removing both "bad bands" and NA observations we had:
+We applied the same method to the AOP Crown data-set to predict \texttt{d15N} from observed spectra. 
+
+<!-- After joining the site trait data and spectra by \texttt{SampleSiteID}, and removing both "bad bands" and NA observations we had: -->
 
 - $n = 2515$ observations
 - $p_A = 350$ spectral points per spectra.
@@ -501,7 +504,7 @@ ggplot()+
   ggtitle("Example Spectra (Scaled Grid)")+
   geom_point(data = tbxa, aes(grid,value))+
   geom_point(data = tbxb, aes(grid, value))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   theme_bw()+
   theme(text = element_text(size = 14))
 ```
@@ -518,7 +521,7 @@ ggplot()+
   scale_color_manual(name='Observation Grid',
                      breaks=c('Instrument A', 'Instrument B'),
                      values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   theme_bw()+
   theme(legend.position = c(.75,.85),
         text = element_text(size = 14))
@@ -532,11 +535,21 @@ ggplot()+
 - Goal: predict \texttt{d15N} from spectra observed on $G_B$, using a model trained with spectra observed on $G_A$.
   + $80/20$ train/test split.
 
+\vspace{72pt}
+
+\vspace{59pt}
+
+
+## Example II: Two Approaches
+
+- Goal: predict \texttt{d15N} from spectra observed on $G_B$, using a model trained with spectra observed on $G_A$.
+  + $80/20$ train/test split.
+
 Classical PLS Approach + Linear Approximation:
 
 - Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
-- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$ with straight lines
-- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$
+- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$
+- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$.
 
 \vspace{59pt}
 
@@ -548,8 +561,8 @@ Classical PLS Approach + Linear Approximation:
 Classical PLS Approach + Linear Approximation:
 
 - Obtain PLS coefficients $\boldsymbol{\hat{\beta}}_A$ using $y^{train}$ and $x^{train}(w)$ on $G_A$
-- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$ with straight lines
-- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$
+- Approximate $x^{test}(w)$ on $G_A$ using $x^{test}(w)$ on $G_B$
+- Predict $y^{test}$ using approx. observations of $x^{test}(w)$ on $G_A$ and $\boldsymbol{\hat{\beta}}_A$.
 
 Functional PLS approach:
 
@@ -568,7 +581,7 @@ ggplot()+
   scale_color_manual(name='Observation Grid',
                      breaks=c('Instrument A', 'Instrument B'),
                      values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   theme_bw()+
   theme(legend.position = c(.75,.85),
         text = element_text(size = 14))
@@ -585,7 +598,7 @@ ggplot()+
   geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
   geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3)+
   lims(x = c(.247,.303), y = c(3250,4250))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   scale_color_manual(name='Observation Grid',
                      breaks=c('Instrument A', 'Instrument B'),
                      values=c('Instrument A'='#e3755d', 'Instrument B'='#1ccfb4'))+
@@ -604,7 +617,7 @@ ggplot()+
   ggtitle("Example Spectra (Zoomed In)")+
   geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
   geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3)+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   geom_line(data = tbxb, aes(grid,value))+
   lims(x = c(.247,.303), y = c(3250,4250))+
   scale_color_manual(name='Observation Grid',
@@ -626,7 +639,7 @@ ggplot()+
   geom_point(data = tbxa, aes(grid,value, color =  'Instrument A'), size = 3)+
   geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3, alpha = .2)+
   geom_line(data = tbxb, aes(grid,value))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   lims(x = c(.247,.303), y = c(3250,4250))+
   scale_color_manual(name='Observation Grid',
                      breaks=c('Instrument A', 'Instrument B'),
@@ -649,7 +662,7 @@ ggplot()+
   geom_point(data = tbxb, aes(grid, value, color = 'Instrument B'), size = 3, alpha = .2)+
   geom_point(data = tbxbapprox, aes(grid, value,  color = 'Linear approx: B to A'), size = 3)+
   geom_line(data = tbxb, aes(grid,value))+
-  labs(x = "wavelength", y = "reflectance")+
+  labs(x = "w", y = "reflectance")+
   lims(x = c(.247,.303), y = c(3250,4250))+
   scale_color_manual(name='Observation Grid',
                      breaks=c('Instrument A', 'Instrument B', 'Linear approx: B to A'),
@@ -707,6 +720,19 @@ tibble(preds = c(fpls_preds_A_basis,fpls_preds_B_basis), y = rep(y_test,2), grid
 ```
 
 
+## Example II: Results for Other Responses
+
+We repeated the example for two other responses in the AOP Crown data-set, \texttt{LWC\_per} and \texttt{LMA\_gm2}. Using functional PLS resulted in reduced root mean squared prediction error (RMSPE) for all three responses.
+
+\begin{table}[h]
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & \multicolumn{1}{l}{\texttt{d15N}} & \multicolumn{1}{l}{\texttt{LWC\_per}} & \multicolumn{1}{l}{\texttt{LMA\_gm2}} \\ \midrule
+PLS & $3.04$ & $45.42$ & $218.89$ \\
+FPLS & $1.75$ & $38.21$ & $150.10$ \\ \bottomrule
+\end{tabular}
+\caption{RMSPE for three site trait variables in the AOP Crown data-set.}
+\end{table}
 
 ## Appendix I: Intuition Behind FPLS Coefficient
 
