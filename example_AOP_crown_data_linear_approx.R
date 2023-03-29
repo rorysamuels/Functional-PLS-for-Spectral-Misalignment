@@ -140,16 +140,6 @@ pmse_fpls_basis <- pmse(fpls_preds_B_basis,y_test)
 
 
 
-sqrt(pmse_lin_approx) %>% round(2)
-sqrt(pmse_fpls_basis) %>% round(2)
-
-
-
-
-
-
-
-
 
 
 
